@@ -18,17 +18,19 @@ np.random.seed(0)
 ### load
 
 data = load()
+data = whiten(data - data.mean(0))
+
 ndim = data.shape[1]
 
 ### model
 
-Nmax = 10
+Nmax = 20
 affine = True
-nlags = 3
+nlags = 1
 
-model = models.ARWeakLimitStickyHDPHMM(
-    alpha=4., gamma=4.,
-    kappa=1e6,
+model = models.FastARWeakLimitStickyHDPHMM(
+    alpha=10., gamma=10.,
+    kappa=1e4,
     init_state_distn='uniform',
     obs_distns=[
         distributions.AutoRegression(
@@ -68,5 +70,5 @@ def make_frame_mpl(t):
     model.plot_stateseq(model.states_list[0],ax=ax,update=True,draw=False,plot_slice=plot_slice)
     return mplfig_to_npimage(fig)
 
-animation = VideoClip(make_frame_mpl, duration=15)
+animation = VideoClip(make_frame_mpl, duration=60)
 animation.write_videofile('gibbs.mp4',fps=15)
